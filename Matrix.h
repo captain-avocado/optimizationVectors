@@ -25,6 +25,7 @@ public:
 
     Matrix();
     Matrix(int);
+    Matrix(vector<double>);
     Matrix(int, int);
     Matrix(Matrix &matrixToCopy);
 //    ~Matrix(); //не нужен
@@ -36,8 +37,14 @@ public:
     double getByIndex(int, int) const;
     double setByIndex(int, int, double);
 
+    Matrix transpose();
+    vector<double> getVector(int);
+
     Matrix operator+ (const Matrix &right);
     Matrix operator- (const Matrix &right);
+
+    //оператор умножения на скаляр –– скаляр всегда справа
+    Matrix operator* (const double &alpha);
     const Matrix &operator= (const Matrix &right);
     bool operator== (const Matrix &right) const;
 

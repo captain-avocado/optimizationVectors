@@ -9,6 +9,7 @@
 #include <vector>
 #include <iostream>
 #include "Parser.h"
+#include "Matrix.h"
 
 using std::cout;
 using std::cin;
@@ -70,6 +71,8 @@ private:
     double DSK(double x, double a, double b, int &k);
     double cubicInterpolation(double a, double b, int &k);
     double quadraticInterpolation(double a, double b, int &k);
+
+    void CGM();
 
     double eval(const Expression&);
     double f(double);

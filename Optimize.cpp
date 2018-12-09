@@ -551,6 +551,32 @@ double Optimize::alphaSearch() {
     return  alpha;
 }
 
+void Optimize::CGM() {
+
+    int j = 0;
+    double alpha = 0, betta;
+    Matrix x(x0), g(x0.size()), prevG(x0.size());
+    do {
+        for (int i = 0; i < x0.size(); i++) {
+            x.values[0][i] += e;
+            g.values[0][i] = y(x.values[0]);
+
+            x.values[0][i] -= 2 * e;
+            g.values[0][i] -= y(x.values[0]);
+
+            x.values[0][i] += e;
+            g.values[0][i] /= 2 * e;
+        }
+
+        if (j == 0) {
+
+        }
+
+    } while ();
+
+
+}
+
 void Optimize::setX0(vector<double> x) {
     x0.resize(x.size());
     for (int i = 0; i < x.size(); i++) {

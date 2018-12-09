@@ -9,10 +9,10 @@ using std::cin;
 using std::endl;
 
 void Matrix::createMatrix() {
-    values.resize(rows);
-    for (int i = 0; i < rows; i++) {
-        values[i].resize(cols);
-        for (int j = 0; j < cols; j++) {
+    values.resize(cols);
+    for (int i = 0; i < cols; i++) {
+        values[i].resize(rows);
+        for (int j = 0; j < rows; j++) {
             values[i][j] = 0;
         }
     }
@@ -35,13 +35,25 @@ Matrix::Matrix(int newRows) {
     createMatrix();
 }
 
+Matrix::Matrix(vector<double> x) {
+    rows = x.size();
+    cols = 1;
+    values.resize(cols);
+    for (int i = 0; i < cols; i++) {
+        values[i].resize(rows);
+        for (int j = 0; j < rows; j++) {
+            values[i][j] = x[i];
+        }
+    }
+}
+
 Matrix::Matrix(Matrix &matrixToCopy) {
     rows = matrixToCopy.rows;
     cols = matrixToCopy.cols;
-    values.resize(rows);
-    for (int i = 0; i < rows; i++) {
-        values[i].resize(cols);
-        for (int j = 0; j < cols; j++) {
+    values.resize(cols);
+    for (int i = 0; i < cols; i++) {
+        values[i].resize(rows);
+        for (int j = 0; j < rows; j++) {
             values[i][j] = matrixToCopy.values[i][j];
         }
     }
@@ -53,7 +65,7 @@ int Matrix::getCols() const {   return cols;    }
 void Matrix::printMatrix() {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
-            cout << values[i][j] << " ";
+            cout << values[j][i] << " ";
         }
         cout << endl;
     }
@@ -65,25 +77,44 @@ void Matrix::setMatrix() {
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             cout << "[" << i << "][" << j << "] = ";
-            cin >> values[i][j];
+            cin >> values[j][i];
         }
     }
     printMatrix();
 }
 
 double Matrix::getByIndex(int i, int j) const {
-    return values[i][j];
+    if (i < rows && j < cols) {
+        return values[j][i];
+    } else {
+        cout << "Ошибка: индексы превышают границы матрицы" << endl;
+        exit(1);
+    }
 }
 
 double Matrix::setByIndex(int i, int j, double val) {
-    values[i][j] = val;
+    if (i < rows && j < cols) {
+        values[j][i] = val;
+    } else {
+        cout << "Ошибка: индексы превышают границы матрицы" << endl;
+        exit(1);
+    }
+}
+
+Matrix Matrix::transpose() {
+//    int tmpCols = cols;
+//    cols = roes
+}
+
+vector<double> Matrix::getVector(int i) {
+    return values[i];
 }
 
 Matrix Matrix::operator+ (const Matrix &right) {
     if (rows == right.rows && cols == right.cols) {
         Matrix result(rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
                 result.values[i][j] = values[i][j] + right.values[i][j];
             }
         }
@@ -96,8 +127,8 @@ Matrix Matrix::operator+ (const Matrix &right) {
 Matrix Matrix::operator- (const Matrix &right) {
     if (rows == right.rows && cols == right.cols) {
         Matrix result(rows, cols);
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
                 result.values[i][j] = values[i][j] - right.values[i][j];
             }
         }
@@ -107,14 +138,24 @@ Matrix Matrix::operator- (const Matrix &right) {
     }
 }
 
+Matrix Matrix::operator*(const double &alpha) {
+    Matrix result(rows, cols);
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < rows; j++) {
+            result.values[i][j] = values[i][j] * alpha;
+        }
+    }
+    return result;
+}
+
 const Matrix& Matrix::operator=(const Matrix &right) {
     if (&right != this) {
         rows = right.rows;
         cols = right.cols;
-        values.resize(rows);
-        for (int i = 0; i < rows; i++) {
-            values[i].resize(cols);
-            for (int j = 0; j < cols; j++) {
+        values.resize(cols);
+        for (int i = 0; i < cols; i++) {
+            values[i].resize(rows);
+            for (int j = 0; j < rows; j++) {
                 values[i][j] = right.values[i][j];
             }
         }
@@ -126,8 +167,8 @@ bool Matrix::operator== (const Matrix &right) const {
     if (rows != right.rows || cols != right.cols) {
         return false;
     }
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
+    for (int i = 0; i < cols; i++) {
+        for (int j = 0; j < rows; j++) {
             if (values[i][j] != right.values[i][j]) {
                 return false;
             }
