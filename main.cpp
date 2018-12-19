@@ -8,29 +8,37 @@ using std::endl;
 
 int main() {
     std::string expression;
-//    std::cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ ÑÑ‚Ñ€Ð¾ÐºÑƒ:" << std::endl;
+//    std::cout << "‚¢¥¤¨â¥ áâà®ªã:" << std::endl;
 //    cin >> expression;
 
-    expression = "x[0]^2+3*x[1]^2+2*x[0]*x[1]";
+    expression = "100*(x[1] - x[0]^2)^2 + (1 - x[0])^2";
     Optimize op(expression);
 
-    vector<double> p(2), x0(2);
-    x0[0] = 1; x0[1] = 1;
-    p[0] = 2; p[1] = 3;
+    Matrix p(2), x0(2);
+    x0.values[0][0] = 10; x0.values[0][1] = 10;
+    p.values[0][0] = 2; //p.values[1][0] = 1;
+    p.values[0][1] = 3; //p.values[1][1] = 4;
     op.setX0(x0);
     op.setP(p);
 
-    vector<double> x;
 
-    for (int i = 0; i < 7; i++) {
-        for (int j = 0; j < 5; j++) {
-            cout << "Ð¡Ð²ÑÐ·ÐºÐ°: " << op.getOneDimMethodByIndex(i) << " + " << op.getInterpMethodByIndex(j) << endl;
-            op.setIndexQueue(i, j);
-            x = op.newPoint(op.alphaSearch());
-            cout << "Ð ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚: " <<   x[0] << " " << x[1]   << endl;
-        }
-
-    }
+    Matrix x;
+//    x = p.transpose();
+//    x.printMatrix();
+//    x = x0.transpose() * p;
+//    x.printMatrix();
+//    op.CGM();
+    op.MPK();
+//    for (int i = 0; i < 7; i++) {
+//        for (int j = 0; j < 5; j++) {
+//            cout << "‘¢ï§ª : " << op.getOneDimMethodByIndex(i) << " + " << op.getInterpMethodByIndex(j) << endl;
+//            op.setIndexQueue(i, j);
+//            op.CGM();
+//            x = op.newPoint(op.alphaSearch());
+//            cout << "¥§ã«ìâ â: " <<   x.values[0][0] << " " << x.values[0][1]   << endl;
+//        }
+//
+//    }
 
 
     return 0;

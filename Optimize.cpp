@@ -1,17 +1,13 @@
 //
-// Created by –ê—Ä—Ç–µ–º –ö–∞–ª–æ–µ–≤ on 06/12/2018.
+// Created by Ä‡‚•¨ ä†´Æ•¢ on 06/12/2018.
 //
 
 #include "Optimize.h"
 #include <cmath>
 #include <sstream>
 
-vector<double> Optimize::newPoint(double h) {
-    vector<double> x(x0.size());
-    for (int i = 0; i < x0.size(); i++) {
-        x[i] = x0[i] + p[i] * h;
-    }
-    return x;
+Matrix Optimize::newPoint(double h) {
+    return x0 + (p * h);
 }
 
 double Optimize::eval(const Expression& e) {
@@ -45,8 +41,9 @@ double Optimize::eval(const Expression& e) {
         throw std::runtime_error("Unknown expression type");
 }
 
-double Optimize:: y(std::vector<double> x) {
-    std::string tExpr = expression; // –í—Ä–µ–º–µ–Ω–Ω–æ–µ –≤—ã—Ä–∞–∂–µ–Ω–∏–µ –¥–ª—è –æ–±—Ä–∞–±–æ—Ç–∫–∏ –ø–∞—Ä—Å–µ—Ä–æ–º
+double Optimize:: y(Matrix x) {
+
+    std::string tExpr = expression; // Ç‡•¨•≠≠Æ• ¢Î‡†¶•≠®• §´Ô Æ°‡†°Æ‚™® Ø†‡·•‡Æ¨
     bool flag = true;
     while (flag) {
         std::ostringstream stream;
@@ -59,11 +56,11 @@ double Optimize:: y(std::vector<double> x) {
                     shift = k - j;
                 }
                 int number = stoi(substr);
-                if (number >= x.size()) {
+                if (number >= x.getRows()) {
                     std::cout << "Invalid expression, no x[" << number << "]" << std::endl;
                     exit(1);
                 }
-                stream << x[number];
+                stream << x.values[0][number];
                 tExpr.erase(j, 2 + shift);
                 tExpr.insert(j, stream.str());
                 break;
@@ -80,77 +77,77 @@ double Optimize:: y(std::vector<double> x) {
 }
 
 double Optimize::f(double h) {
-    vector<double> x = newPoint(h);
+    Matrix x = newPoint(h);
     return y(x);
 }
 
 double Optimize::df(double alpha){
-    vector<double> x = newPoint(alpha);
-    g.resize(x.size());
+    Matrix x = newPoint(alpha);
+    g.values[0].resize(x.getRows());
     switch(dfOption){
         case 0: {
-            for (int i = 0; i < x.size(); i++) {
-                x[i] += e;
-                g[i] = y(x);
+            for (int i = 0; i < x.getRows(); i++) {
+                x.values[0][i] += e;
+                g.values[0][i] = y(x);
 
-                x[i] -= e;
-                g[i] -= y(x);
+                x.values[0][i] -= e;
+                g.values[0][i] -= y(x);
 
-                g[i] /= e;
+                g.values[0][i] /= e;
             }
             break;
         }
         case 1: {
-            for (int i = 0; i < x.size(); i++) {
-                x[i] += e;
-                g[i] = y(x);
+            for (int i = 0; i < x.getRows(); i++) {
+                x.values[0][i] += e;
+                g.values[0][i] = y(x);
 
-                x[i] -= 2 * e;
-                g[i] -= y(x);
+                x.values[0][i] -= 2 * e;
+                g.values[0][i] -= y(x);
 
-                x[i] += e;
-                g[i] /= 2 * e;
+                x.values[0][i] += e;
+                g.values[0][i] /= 2 * e;
             }
             break;
         }
         case 2: {
-            for (int i = 0; i < x.size(); i++) {
-                x[i] -= e;
-                g[i] = y(x);
-                x[i] += e;
-                g[i] -= 4 * y(x);
+            for (int i = 0; i < x.getRows(); i++) {
+                x.values[0][i] -= e;
+                g.values[0][i] = y(x);
+                x.values[0][i] += e;
+                g.values[0][i] -= 4 * y(x);
 
-                x[i] += e;
-                g[i] += 3 * y(x);
+                x.values[0][i] += e;
+                g.values[0][i] += 3 * y(x);
 
-                x[i] -= e;
-                g[i] /= 2 * e;
+                x.values[0][i] -= e;
+                g.values[0][i] /= 2 * e;
             }
             break;
         }
         case 3: {
-            for (int i = 0; i < x.size(); i++) {
-                x[i] += 2 * e;
-                g[i] = -y(x);
+            for (int i = 0; i < x.getRows(); i++) {
+                x.values[0][i] += 2 * e;
+                g.values[0][i] = -y(x);
 
-                x[i] -= e;
-                g[i] += 8 * y(x);
+                x.values[0][i] -= e;
+                g.values[0][i] += 8 * y(x);
 
-                x[i] -= 2 * e;
-                g[i] -= 8 * y(x);
+                x.values[0][i] -= 2 * e;
+                g.values[0][i] -= 8 * y(x);
 
-                x[i] -= e;
-                g[i] += y(x);
+                x.values[0][i] -= e;
+                g.values[0][i] += y(x);
 
-                x[i] += 2 * e;
-                g[i] /= 12 * e;
+                x.values[0][i] += 2 * e;
+                g.values[0][i] /= 12 * e;
             }
             break;
         }
     }
     double result = 0;
-    for (int i = 0; i < g.size(); i++) {
-        result += g[i] * p[i];
+    for (int i = 0; i < g.getRows(); i++) {
+        result += g.values[0][i] * p.values[0][i];
     }
     return result;
 }
@@ -158,11 +155,11 @@ double Optimize::df(double alpha){
 void Optimize::swann(double x, double &a, double &b, int &k) {
     double x1 = x, x2, h = e;
 
-    //–∏–∑–º–µ–Ω–∏—Ç—å –Ω–∞–ø—Ä–∞–≤–ª–µ–Ω–∏–µ —à–∞–≥–∞ –≤ —Å–ª—É—á–∞–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è —Ñ—É–Ω–∫—Ü–∏–∏
+    //®ß¨•≠®‚Ï ≠†Ø‡†¢´•≠®• Ë†£† ¢ ·´„Á†• ¢Æß‡†·‚†≠®Ô ‰„≠™Ê®®
     if (f(x - h) < f(x)) { h = -h; }
     x2 = x + h;
 
-    //–ø–æ–∫–∞ —Ñ—É–Ω–∫—Ü–∏—è —É–±—ã–≤–∞–µ—Ç, –ø–µ—Ä–µ–π—Ç–∏ –¥–∞–ª—å—à–µ, —É–¥–≤–æ–∏–≤ —Ä–∞–∑–º–µ—Ä —à–∞–≥–∞
+    //ØÆ™† ‰„≠™Ê®Ô „°Î¢†•‚, Ø•‡•©‚® §†´ÏË•, „§¢Æ®¢ ‡†ß¨•‡ Ë†£†
     for (a = b = 0, k = 0; f(x1) > f(x2) && k < kMaxSwann; k++) {
         k++;
         h *= 2;
@@ -170,7 +167,7 @@ void Optimize::swann(double x, double &a, double &b, int &k) {
         x2 += h;
     }
 
-    //–æ–±–æ–∑–Ω–∞—á–∏—Ç—å –≥—Ä–∞–Ω–∏—Ü—ã –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+    //Æ°Æß≠†Á®‚Ï £‡†≠®ÊÎ Ø‡Æ¨•¶„‚™†
     double x0 = x1 - h/2;
     if (x0 < x2) { a = x0; b = x2; }
     else { a = x2; b = x0; }
@@ -191,18 +188,18 @@ double Optimize::ZS1(double &a, double &b, int &k) {
 }
 
 double Optimize::ZS2(double &a, double &b, int &k) {
-    //–Ω–∞–π—Ç–∏ –ø–µ—Ä–≤—É—é —Ç–æ—á–∫—É –¥–µ–ª–µ–Ω–∏—è –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+    //≠†©‚® Ø•‡¢„Ó ‚ÆÁ™„ §•´•≠®Ô Ø‡Æ¨•¶„‚™†
     double phi = sqrt(5)/2 - 0.5,
             x1 = a + phi * (b - a),
             x2;
 
-    //–ø–æ–∫–∞ –ø—Ä–æ–º–µ–∂—É—Ç–æ–∫ –Ω–µ–¥–æ—Å—Ç–∞—Ç–æ—á–Ω–æ –º–∞–ª–µ–Ω—å–∫–∏–π
+    //ØÆ™† Ø‡Æ¨•¶„‚Æ™ ≠•§Æ·‚†‚ÆÁ≠Æ ¨†´•≠Ï™®©
     for (k = 0; (b - a) > e && k < kMaxOneDim; k++) {
 
-        //–≤–∑—è—Ç—å —Å–∏–º–º–µ—Ç—Ä–∏—á–Ω—É—é —Ç–æ—á–∫—É –¥–µ–ª–µ–Ω–∏—è –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+        //¢ßÔ‚Ï ·®¨¨•‚‡®Á≠„Ó ‚ÆÁ™„ §•´•≠®Ô Ø‡Æ¨•¶„‚™†
         x2 = a + b - x1;
 
-        //—Ä–∞—Å—Å–º–æ—Ç—Ä–µ—Ç—å 4 —Å–∏—Ç—É–∞—Ü–∏–∏, –ø–µ—Ä–µ–º–µ—Å—Ç–∏—Ç—å –æ–¥–Ω—É –∏–∑ –≥—Ä–∞–Ω–∏—Ü –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞ –∏ –ø–µ—Ä–µ—Å—á–∏—Ç–∞—Ç—å –ø–µ—Ä–≤—É—é —Ç–æ—á–∫—É –¥–µ–ª–µ–Ω–∏—è –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+        //‡†··¨Æ‚‡•‚Ï 4 ·®‚„†Ê®®, Ø•‡•¨•·‚®‚Ï Æ§≠„ ®ß £‡†≠®Ê Ø‡Æ¨•¶„‚™† ® Ø•‡•·Á®‚†‚Ï Ø•‡¢„Ó ‚ÆÁ™„ §•´•≠®Ô Ø‡Æ¨•¶„‚™†
         if (x2 <= x1) {
             if (f(x2) <= f(x1)) { b = x1; x1 = x2; }
             else { a = x2;  x1 = a + phi * (b - a); }
@@ -212,7 +209,7 @@ double Optimize::ZS2(double &a, double &b, int &k) {
         }
     }
 
-    //–≤–µ—Ä–Ω—É—Ç—å –º–∏–Ω–∏–º—É–º
+    //¢•‡≠„‚Ï ¨®≠®¨„¨
     return 0.5 * (b + a);
 }
 
@@ -228,7 +225,7 @@ double Optimize::fibonacci1(double &a, double &b, int &k) {
     double x1, x2, Ln = 0.1 * e;
 
     int n = 0;
-    while (Fib(n) < (b - a) / Ln) // –≤—ã—á–∏—Å–ª–µ–Ω–∏–µ —á–∏—Å–ª–∞ n
+    while (Fib(n) < (b - a) / Ln) // ¢ÎÁ®·´•≠®• Á®·´† n
     { n++; }
 
 
@@ -258,7 +255,7 @@ double Optimize::fibonacci2(double &a, double &b, int &k) {
     double x1, x2, Ln = e;
 
     double n = 0;
-    while (Fib(n) < (b - a) / Ln) // –≤—ã—á–∏—Å–ª–µ–Ω–∏–µ —á–∏—Å–ª–∞ n
+    while (Fib(n) < (b - a) / Ln) // ¢ÎÁ®·´•≠®• Á®·´† n
     { n++; }
 
     x1 = a + (Fib(n - 1) / Fib(n)) * (b - a) + (pow((-1), n) / Fib(n)) * e;
@@ -348,18 +345,18 @@ double Optimize::bolcano(double &a, double &b, int &k) {
 double Optimize::Powell(double a, double c, int &k) {
     double e1, e2;
     e1 = e2 = e;
-    //–Ω–∞–π—Ç–∏ —Ç–æ—á–∫—É b, –∫–∞–∫ —Å–µ—Ä–µ–¥–∏–Ω—É –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞, –∏ d –ø–æ —Ñ–æ—Ä–º—É–ª–µ
+    //≠†©‚® ‚ÆÁ™„ b, ™†™ ·•‡•§®≠„ Ø‡Æ¨•¶„‚™†, ® d ØÆ ‰Æ‡¨„´•
     double b = 0.5 * (a + c), d;
     d = 0.5 * (f(a) * (b * b - c * c) + f(b) * (c * c - a * a) + f(c) * (a * a - b * b))
         /(f(a) * (b - c) + f(b) * (c - a) + f(c) * (a - b));
     k = 1;
-    //–ø–æ–∫–∞ –ö–û–ü –Ω–µ —É–¥–æ–≤–ª–µ—Ç–≤–æ—Ä–µ–Ω
+    //ØÆ™† äéè ≠• „§Æ¢´•‚¢Æ‡•≠
     while(!(abs((b - d) / b) <= e1 &&
             abs((f(b) - f(d)) / f(b)) <= e2))
     {
         k++;
 
-        //—Ä–∞—Å—Å–º–æ—Ç—Ä–µ—Ç—å 4 —Å–∏—Ç—É–∞—Ü–∏–∏, –≤–∑—è—Ç—å –Ω–æ–≤—É—é –≥—Ä–∞–Ω–∏—Ü—É –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞ –∏ –æ–¥–Ω—É –∏–∑ —Ç–æ—á–µ–∫ –¥–µ–ª–µ–Ω–∏—è –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+        //‡†··¨Æ‚‡•‚Ï 4 ·®‚„†Ê®®, ¢ßÔ‚Ï ≠Æ¢„Ó £‡†≠®Ê„ Ø‡Æ¨•¶„‚™† ® Æ§≠„ ®ß ‚ÆÁ•™ §•´•≠®Ô Ø‡Æ¨•¶„‚™†
         if (f(b) < f(d))
         {
             if (d < b) { a = d; }
@@ -370,13 +367,13 @@ double Optimize::Powell(double a, double c, int &k) {
             else { c = b; b = d; }
         }
 
-        //–Ω–∞–π—Ç–∏ d –ø–æ —Ñ–æ—Ä–º—É–ª–µ
+        //≠†©‚® d ØÆ ‰Æ‡¨„´•
         d = 0.5 * (a + b) + 0.5 *
                             ((f(a) - f(b)) * (b - c) * (c - a))
                             /(f(a) * (b - c) + f(b) * (c - a) + f(c) * (a - b));
     }
 
-    //–≤–µ—Ä–Ω—É—Ç—å –º–∏–Ω–∏–º—É–º
+    //¢•‡≠„‚Ï ¨®≠®¨„¨
     return 0.5 * (b + d);
 }
 
@@ -403,18 +400,18 @@ double Optimize::Davidon(double a, double b, int &k) {
 void Optimize::swannDSK(double x, double &a, double &b, double &c) {
     double x1 = x, x2, h = e;
 
-    //–∏–∑–º–µ–Ω–∏—Ç—å –Ω–∞–ø—Ä–∞–≤–ª–µ–Ω–∏–µ —à–∞–≥–∞ –≤ —Å–ª—É—á–∞–µ –≤–æ–∑—Ä–∞—Å—Ç–∞–Ω–∏—è —Ñ—É–Ω–∫—Ü–∏–∏
+    //®ß¨•≠®‚Ï ≠†Ø‡†¢´•≠®• Ë†£† ¢ ·´„Á†• ¢Æß‡†·‚†≠®Ô ‰„≠™Ê®®
     if (f(x - h) < f(x)) { h = -h; }
     x2 = x + h;
 
-    //–ø–æ–∫–∞ —Ñ—É–Ω–∫—Ü–∏—è —É–±—ã–≤–∞–µ—Ç, –ø–µ—Ä–µ–π—Ç–∏ –¥–∞–ª—å—à–µ, —É–¥–≤–æ–∏–≤ —Ä–∞–∑–º–µ—Ä —à–∞–≥–∞
+    //ØÆ™† ‰„≠™Ê®Ô „°Î¢†•‚, Ø•‡•©‚® §†´ÏË•, „§¢Æ®¢ ‡†ß¨•‡ Ë†£†
     while (f(x1) > f(x2)) {
         h *= 2;
         x1 = x2;
         x2 += h;
     }
 
-    //–æ–±–æ–∑–Ω–∞—á–∏—Ç—å –≥—Ä–∞–Ω–∏—Ü—ã –ø—Ä–æ–º–µ–∂—É—Ç–∫–∞
+    //Æ°Æß≠†Á®‚Ï £‡†≠®ÊÎ Ø‡Æ¨•¶„‚™†
     double x0 = x1 - h/2;
     if (x0 < x2) { a = x0; b = x2; }
     else { a = x2; b = x0; }
@@ -551,55 +548,245 @@ double Optimize::alphaSearch() {
     return  alpha;
 }
 
-void Optimize::CGM() {
+void Optimize::df() {
+    for (int i = 0; i < x0.getRows(); i++) {
+        x0.values[0][i] += e;
+        g.values[0][i] = y(x0);
 
-    int j = 0;
-    double alpha = 0, betta;
-    Matrix x(x0), g(x0.size()), prevG(x0.size());
-    do {
-        for (int i = 0; i < x0.size(); i++) {
-            x.values[0][i] += e;
-            g.values[0][i] = y(x.values[0]);
+        x0.values[0][i] -= 2 * e;
+        g.values[0][i] -= y(x0);
 
-            x.values[0][i] -= 2 * e;
-            g.values[0][i] -= y(x.values[0]);
-
-            x.values[0][i] += e;
-            g.values[0][i] /= 2 * e;
-        }
-
-        if (j == 0) {
-
-        }
-
-    } while ();
-
-
-}
-
-void Optimize::setX0(vector<double> x) {
-    x0.resize(x.size());
-    for (int i = 0; i < x.size(); i++) {
-        x0[i] = x[i];
+        x0.values[0][i] += e;
+        g.values[0][i] /= 2 * e;
     }
 }
 
-void Optimize::setP(vector<double> x) {
-    p.resize(x.size());
-    for (int i = 0; i < x.size(); i++) {
-        p[i] = x[i];
+void Optimize::MPK() {
+    x0.values[0][0] = -2; x0.values[0][1] = -2;
+    x0.values[0].resize(2);
+    x0.values.resize(1);
+    x0.cols = 1;
+    x0.rows = 2;
+    g.cols = 1;
+    g.rows = 2;
+    g.values[0].resize(2);
+    g.values.resize(1);
+    int j = 0, k;
+    double alpha = 0, a, b;
+    vector<double> vp = p.values[0], vg = g.values[0], vx0 = x0.values[0], vx = x0.values[0], prevx = x0.values[0], d = x0.values[0];
+    double norma;
+    do {
+        for (int i = 0; i < vx0.size(); i++) {
+            vx0[i] += e;
+            vg[i] = y(Matrix(vx0));
+
+            vx0[i] -= 2 * e;
+            vg[i] -= y(Matrix(vx0));
+
+            vx0[i] += e;
+            vg[i] /= 2 * e;
+        }
+
+        x0 = Matrix(vx0);
+        g = Matrix(vg);
+
+        // ç†ÂÆ¶„ p, ™†™ †≠‚®£‡†§®•≠‚ g
+        for (int i = 0; i < vg.size(); i++) {
+            vp[i] = -vg[i];
+        }
+
+        // á†Ø®·Î¢†Ó p, Á‚Æ°Î §‡„£®• ¨•‚Æ§Î ‡†°Æ‚†´® ≠Æ‡¨†´Ï≠Æ
+        p = Matrix(vp);
+
+        swann(0, a, b, k);
+        alpha = ZS1(a, b, k);
+        alpha = Powell(a, b, k);
+//        alpha = alphaSearch();
+
+        // è‡® Ø•‡¢Æ© ®‚•‡†Ê®® ≠†ÂÆ¶„ ¢‚Æ‡„Ó ‚ÆÁ™„ Á•‡•ß ¢•™‚Æ‡ p ® †´Ï‰¢
+        if (j == 0) {
+            for (int i = 0; i < vx0.size(); i++) {
+                vx[i] = vx0[i] + vp[i] * alpha;
+            }
+        }
+
+        for (int i = 0; i < vx0.size(); i++) {
+            vx0[i] += e;
+            vg[i] = y(Matrix(vx0));
+
+            vx0[i] -= 2 * e;
+            vg[i] -= y(Matrix(vx0));
+
+            vx0[i] += e;
+            vg[i] /= 2 * e;
+        }
+
+        x0 = Matrix(vx0);
+        g = Matrix(vg);
+
+        for (int i = 0; i < vg.size(); i++) {
+            vp[i] = -vg[i];
+        }
+
+        p = Matrix(vp);
+
+        swann(0, a, b, k);
+        alpha = ZS1(a, b, k);
+        alpha = Powell(a, b, k);
+
+        // á†ØÆ¨®≠†Ó ‚•™„È„Ó ‚ÆÁ™„, Á‚Æ°Î Æ≠† ·‚†´† Ø‡•§-Ø‡•§ ØÆ·´•§≠•©, Á‚Æ°Î ØÆ‚Æ¨ ß†Â¢†‚®‚Ï •• ¢ x0
+        prevx = vx;
+
+        // ç†ÂÆ¶„ ·´•§„ÓÈ„Ó (‚‡•‚ÏÓ) ‚ÆÁ™„ §´Ô ≠†ÂÆ¶§•≠®Ô d
+        for (int i = 0; i < vx0.size(); i++) {
+            vx[i] = prevx[i] + vp[i] * alpha;
+        }
+
+        // ç†ÂÆ¶„ d, ™†™ ‡†ß≠Æ·‚Ï Ø•‡¢Æ© ® ‚‡•‚Ï•© ‚ÆÁ™®
+        for (int i = 0; i < vx.size(); i++) {
+            d[i] = vx[i] - vx0[i];
+        }
+
+        swann(0, a, b, k);
+        alpha = ZS1(a, b, k);
+        alpha = Powell(a, b, k);
+
+        // ç†ÂÆ¶„ Á•‚¢•‡‚„Ó ‚ÆÁ™„, ®·ØÆ´Ïß„Ô d, ™†™ ≠Æ‡¨®‡„ÓÈ•• ß≠†Á•≠®•.
+        for (int i = 0; i < d.size(); i++) {
+            vx[i] = vx[i] + d[i] * alpha;
+        }
+
+        j++;
+
+        norma = 0;
+        for (int i = 0; i < d.size(); i++) {
+            norma += pow(d[i], 2);
+        }
+        norma = sqrt(norma);
+
+        vx0 = prevx;
+    } while (norma > 0.001);
+
+    x0.printMatrix();
+    cout << "i = " << j << endl;
+}
+
+void Optimize::CGM() {
+
+    //Á®·´•≠≠Æ• §®‰‰•‡•≠Ê®‡Æ¢†≠®• §´Ô n-Ø•‡•¨•≠≠ÎÂ
+    //¢Î°®‡†´®·Ï †´Ï‰†-¨•‚Æ§Î
+    //®ß¨•≠Ô´®·Ï ≠†Á†´Ï≠Î• ‚ÆÁ™® ¢ ß†¢®·®¨Æ·‚® Æ‚ ‰„≠™Ê®®
+    //‡†ß≠Î• °•‚‚†-‰„≠™Ê®®
+    //¨Æ¶≠Æ ·§•´†‚Ï §®‰‰•‡•≠Ê®‡Æ¢†≠®• 2 ® 4 ·ØÆ·Æ°Æ¨
+
+    x0.values[0][0] = -2; x0.values[0][1] = -2;
+    x0.values[0].resize(2);
+    x0.values.resize(1);
+    x0.cols = 1;
+    x0.rows = 2;
+    g.cols = 1;
+    g.rows = 2;
+    g.values[0].resize(2);
+    g.values.resize(1);
+    int j = 0;
+    double alpha = 0, betta1, betta2, betta3, betta4, a, b;
+    int k = 0;
+    Matrix prevG(x0.getRows()), gamma(x0.getRows());
+    vector<double> vp = p.values[0], vg = g.values[0], vx0 = x0.values[0];
+    double norma;
+    do {
+//        df();
+        for (int i = 0; i < vx0.size(); i++) {
+            vx0[i] += e;
+            vg[i] = y(Matrix(vx0));
+
+            vx0[i] -= 2 * e;
+            vg[i] -= y(Matrix(vx0));
+
+            vx0[i] += e;
+            vg[i] /= 2 * e;
+        }
+
+        x0 = Matrix(vx0);
+        g = Matrix(vg);
+
+//         p = Matrix(g.getRows()) - g;
+
+        for (int i = 0; i < vg.size(); i++) {
+            vp[i] = -vg[i];
+        }
+        p = Matrix(vp);
+//        if (j == 0) {
+//            for (int i = 0; i < vg.size(); i++) {
+//                vp[i] = -vg[i];
+//            }
+//            p = Matrix(vp);
+////            p = Matrix(g.getRows()) - g;
+//        } else {
+//            betta1 = pow(g.norma(), 2) / pow(prevG.norma(), 2);
+//            cout << "betta1 = " << betta1 << endl;
+//            gamma = g - prevG;
+//            betta2 = (g.transpose() * gamma).values[0][0] / (p.transpose() * gamma).values[0][0];
+//            cout << "betta2 = " << betta2 << endl;
+//            betta3 = (g.transpose() * gamma).values[0][0] / (prevG.transpose() * prevG).values[0][0];
+//            cout << "betta3 = " << betta3 << endl;
+//            betta4 = (g.transpose() * g).values[0][0] / (prevG.transpose() * prevG).values[0][0];
+//            cout << "betta4 = " << betta4 << endl;
+//            for (int i = 0; i < vg.size(); i++) {
+//                vp[i] = -vg[i];
+//            }
+//            p = Matrix(vp);
+////            p = Matrix(g.getRows()) - g + p * betta3;
+//
+//        }
+
+//        prevG = g;
+
+//        swann(0, a, b, k);
+//        alpha = ZS1(a, b, k);
+//        alpha = Powell(a, b, k);
+        alpha = alphaSearch();
+
+        for (int i = 0; i < vx0.size(); i++) {
+            vx0[i] = vx0[i] + vp[i] * alpha;
+        }
+//        x0 = x0 + p * alpha;
+        j++;
+
+        norma = 0;
+        for (int i = 0; i < vg.size(); i++) {
+            norma += pow(vg[i], 2);
+        }
+        norma = sqrt(norma);
+    } while (norma > 0.00001);
+    x0.printMatrix();
+    cout << "i = " << j << endl;
+
+}
+
+void Optimize::setX0(Matrix x) {
+    x0.values[0].resize(x.getRows());
+    for (int i = 0; i < x.getRows(); i++) {
+        x0.values[0][i] = x.values[0][i];
+    }
+}
+
+void Optimize::setP(Matrix x) {
+    p.values[0].resize(x.getRows());
+    for (int i = 0; i < x.getRows(); i++) {
+        p.values[0][i] = x.values[0][i];
     }
 }
 
 void Optimize::getOneDimMethodsList() {
-    cout << "–û–¥–Ω–æ–º–µ—Ä–Ω—ã–µ –º–µ—Ç–æ–¥—ã: " << endl;
+    cout << "é§≠Æ¨•‡≠Î• ¨•‚Æ§Î: " << endl;
     for (int i = 0; i < oneDimMethods->size(); i++) {
         cout << oneDimMethods[i] << endl;
     }
 }
 
 void Optimize::getInterpMethodsList() {
-    cout << "–ò–Ω—Ç–µ—Ä–ø–æ–ª—è—Ü–∏–æ–Ω–Ω—ã–µ –º–µ—Ç–æ–¥—ã: " << endl;
+    cout << "à≠‚•‡ØÆ´ÔÊ®Æ≠≠Î• ¨•‚Æ§Î: " << endl;
     for (int i = 0; i < interpMethods->size(); i++) {
         cout << interpMethods[i] << endl;
     }

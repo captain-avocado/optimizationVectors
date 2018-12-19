@@ -4,6 +4,8 @@
 
 #include "Parser.h"
 #include <cmath>
+#include <cstring>
+
 using std::setw;
 
 std::string Parser::parse_token() {

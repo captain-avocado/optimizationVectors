@@ -1,5 +1,5 @@
 //
-// Created by –ê—Ä—Ç–µ–º –ö–∞–ª–æ–µ–≤ on 06/12/2018.
+// Created by Ä‡‚•¨ ä†´Æ•¢ on 06/12/2018.
 //
 
 #ifndef MO_OPTIMIZE_H
@@ -20,38 +20,39 @@ using std::vector;
 class Optimize {
 private:
     string expression;
-    vector <double> x0;
-    vector <double> p;
-    vector <double> g;
+    Matrix x0;
+    Matrix p;
+    Matrix g;
     double alpha;
 
-    //–ø–æ —É–º–æ–ª—á–∞–Ω–∏—é: –ó–°-1 + –ü–∞—É—ç–ª–ª
-    int oneDimIndex = 0;
-    int interpIndex = 0;
+    //ØÆ „¨Æ´Á†≠®Ó: áë-1 + è†„Ì´´
+    int oneDimIndex = 6;
+    int interpIndex = 3;
     string oneDimMethods[7] = {
-            "–ó–°-1",
-            "–ó–°-2",
-            "–§–∏–±–æ–Ω–∞—á—á–∏-1",
-            "–§–∏–±–æ–Ω–∞—á—á–∏-2",
-            "–î–∏—Ö–æ—Ç–æ–º–∏—è",
-            "–¢—Ä–µ—Ö—Ç–æ—á–µ—á–µ–Ω—ã–π –ø–æ–∏—Å–∫",
-            "–ë–æ–ª—å—Ü–∞–Ω–æ"
+            "áë-1",
+            "áë-2",
+            "î®°Æ≠†ÁÁ®-1",
+            "î®°Æ≠†ÁÁ®-2",
+            "Ñ®ÂÆ‚Æ¨®Ô",
+            "í‡•Â‚ÆÁ•Á•≠Î© ØÆ®·™",
+            "ÅÆ´ÏÊ†≠Æ"
     };
     string interpMethods[5] = {
-            "–ü–∞—É—ç–ª–ª",
-            "–î–∞–≤–∏–¥–æ–Ω",
-            "–î–°–ö",
-            "–ö—É–±–∏—á–µ—Å–∫–∞—è –∏–Ω—Ç–µ—Ä–ø–æ–ª—è—Ü–∏—è",
-            "–ö–≤–∞–¥—Ä–∞—Ç–∏—á–Ω–∞—è –∏–Ω—Ç–µ—Ä–ø–æ–ª—è—Ü–∏—è"
+            "è†„Ì´´",
+            "Ñ†¢®§Æ≠",
+            "Ñëä",
+            "ä„°®Á•·™†Ô ®≠‚•‡ØÆ´ÔÊ®Ô",
+            "ä¢†§‡†‚®Á≠†Ô ®≠‚•‡ØÆ´ÔÊ®Ô"
     };
 
-    double e = 0.0001;
+    double e = 0.001;
     int kMaxSwann = 40;
     int kMaxOneDim = 5;
     int alphaCounter = 0;
 
     int dfOption = 1;
     double df(double);
+    void df();
 
     void swann(double x, double &a, double &b, int &k);
 
@@ -72,15 +73,14 @@ private:
     double cubicInterpolation(double a, double b, int &k);
     double quadraticInterpolation(double a, double b, int &k);
 
-    void CGM();
+
 
     double eval(const Expression&);
     double f(double);
 
 public:
     Optimize(const string& expr)    {   expression = expr;   }
-    double y(vector<double> x);
-
+    double y(Matrix x);
     void setOneDimIndex(int n)          {   oneDimIndex = n;    }
     void setInterpIndex(int n)          {   interpIndex = n;    }
     void setIndexQueue(int n, int m)    {   oneDimIndex = n; interpIndex = m;   }
@@ -89,14 +89,16 @@ public:
     string getOneDimMethodByIndex(int i)    {   return oneDimMethods[i];    };
     string getInterpMethodByIndex(int i)    {   return interpMethods[i];    };
 
-    vector<double> newPoint(double);
+    Matrix newPoint(double);
     double alphaSearch();
 
+    void MPK();
+    void CGM();
     void setMaxSwann(int n)         {   kMaxSwann = n;  }
     void setMaxOneDim(int n)        {   kMaxOneDim = n; }
     void setDfOption(int n)         {   dfOption = n;   }
-    void setP(vector<double>);
-    void setX0(vector<double>);
+    void setP(Matrix);
+    void setX0(Matrix);
 };
 
 
