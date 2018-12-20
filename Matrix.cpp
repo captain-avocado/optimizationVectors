@@ -1,5 +1,5 @@
 //
-// Created by Ä‡‚•¨ ä†´Æ•¢ on 05/12/2018.
+// Created by –ê—Ä—Ç–µ–º –ö–∞–ª–æ–µ–≤ on 05/12/2018.
 //
 
 #include "Matrix.h"
@@ -87,7 +87,7 @@ double Matrix::getByIndex(int i, int j) const {
     if (i < rows && j < cols) {
         return values[j][i];
     } else {
-        cout << "éË®°™†: ®≠§•™·Î Ø‡•¢ÎË†Ó‚ £‡†≠®ÊÎ ¨†‚‡®ÊÎ" << endl;
+        cout << "–û—à–∏–±–∫–∞: –∏–Ω–¥–µ–∫—Å—ã –ø—Ä–µ–≤—ã—à–∞—é—Ç –≥—Ä–∞–Ω–∏—Ü—ã –º–∞—Ç—Ä–∏—Ü—ã" << endl;
         exit(1);
     }
 }
@@ -96,7 +96,7 @@ double Matrix::setByIndex(int i, int j, double val) {
     if (i < rows && j < cols) {
         values[j][i] = val;
     } else {
-        cout << "éË®°™†: ®≠§•™·Î Ø‡•¢ÎË†Ó‚ £‡†≠®ÊÎ ¨†‚‡®ÊÎ" << endl;
+        cout << "–û—à–∏–±–∫–∞: –∏–Ω–¥–µ–∫—Å—ã –ø—Ä–µ–≤—ã—à–∞—é—Ç –≥—Ä–∞–Ω–∏—Ü—ã –º–∞—Ç—Ä–∏—Ü—ã" << endl;
         exit(1);
     }
 }
@@ -186,7 +186,7 @@ Matrix Matrix::operator+ (const Matrix &right) {
         }
         return result;
     } else {
-        cout << "å†‚‡®ÊÎ ‡†ß≠Æ£Æ ‡†ß¨•‡†. ë´Æ¶•≠®• ≠•¢Æß¨Æ¶≠Æ" << endl;
+        cout << "–ú–∞—Ç—Ä–∏—Ü—ã —Ä–∞–∑–Ω–æ–≥–æ —Ä–∞–∑–º–µ—Ä–∞. –°–ª–æ–∂–µ–Ω–∏–µ –Ω–µ–≤–æ–∑–º–æ–∂–Ω–æ" << endl;
     }
 }
 
@@ -200,7 +200,7 @@ Matrix Matrix::operator- (const Matrix &right) {
         }
         return result;
     } else {
-        cout << "å†‚‡®ÊÎ ‡†ß≠Æ£Æ ‡†ß¨•‡†. ÇÎÁ®‚†≠®• ≠•¢Æß¨Æ¶≠Æ" << endl;
+        cout << "–ú–∞—Ç—Ä–∏—Ü—ã —Ä–∞–∑–Ω–æ–≥–æ —Ä–∞–∑–º–µ—Ä–∞. –í—ã—á–∏—Ç–∞–Ω–∏–µ –Ω–µ–≤–æ–∑–º–æ–∂–Ω–æ" << endl;
     }
 }
 
@@ -243,6 +243,7 @@ bool Matrix::operator== (const Matrix &right) const {
 
     return true;
 }
+
 
 
 

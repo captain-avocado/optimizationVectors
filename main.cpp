@@ -1,44 +1,48 @@
 #include <iostream>
 #include "Matrix.h"
 #include "Optimize.h"
+#include "Vector.h"
 
 using std::cout;
 using std::cin;
 using std::endl;
 
 int main() {
-    std::string expression;
-//    std::cout << "‚¢¥¤¨â¥ áâà®ªã:" << std::endl;
-//    cin >> expression;
+    std::string expression = "(x[0] - 1)^2 + (x[1] - 3)^2 + 4*(x[2] + 5)^2";
+    Vector x0(3);
+    x0.values[0] = 4;
+    x0.values[1] = -1;
+    x0.values[2] = 2;
 
-    expression = "100*(x[1] - x[0]^2)^2 + (1 - x[0])^2";
-    Optimize op(expression);
+//    x0.setVector();
+    Optimize op(expression, x0);
 
-    Matrix p(2), x0(2);
-    x0.values[0][0] = 10; x0.values[0][1] = 10;
-    p.values[0][0] = 2; //p.values[1][0] = 1;
-    p.values[0][1] = 3; //p.values[1][1] = 4;
-    op.setX0(x0);
-    op.setP(p);
+    op.Koshi();
 
 
-    Matrix x;
+//    Matrix x;
 //    x = p.transpose();
 //    x.printMatrix();
 //    x = x0.transpose() * p;
 //    x.printMatrix();
 //    op.CGM();
-    op.MPK();
+//    op.MPK();
 //    for (int i = 0; i < 7; i++) {
 //        for (int j = 0; j < 5; j++) {
-//            cout << "‘¢ï§ª : " << op.getOneDimMethodByIndex(i) << " + " << op.getInterpMethodByIndex(j) << endl;
+//            cout << "Ð¡Ð²ÑÐ·ÐºÐ°: " << op.getOneDimMethodByIndex(i) << " + " << op.getInterpMethodByIndex(j) << endl;
 //            op.setIndexQueue(i, j);
 //            op.CGM();
 //            x = op.newPoint(op.alphaSearch());
-//            cout << "¥§ã«ìâ â: " <<   x.values[0][0] << " " << x.values[0][1]   << endl;
+//            cout << "Ð ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚: " <<   x.values[0][0] << " " << x.values[0][1]   << endl;
 //        }
 //
 //    }
+
+//    Vector h(2);
+//    h.setVector();
+//    Vector m(2);
+//    m.setVector();
+//    cout << m * h << endl;
 
 
     return 0;

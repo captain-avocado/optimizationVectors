@@ -1,5 +1,5 @@
 //
-// Created by Ä‡‚•¨ ä†´Æ•¢ on 06/12/2018.
+// Created by –ê—Ä—Ç–µ–º –ö–∞–ª–æ–µ–≤ on 06/12/2018.
 //
 
 #ifndef MO_OPTIMIZE_H
@@ -9,7 +9,8 @@
 #include <vector>
 #include <iostream>
 #include "Parser.h"
-#include "Matrix.h"
+#include "Vector.h"
+//#include "Matrix.h"
 
 using std::cout;
 using std::cin;
@@ -20,34 +21,35 @@ using std::vector;
 class Optimize {
 private:
     string expression;
-    Matrix x0;
-    Matrix p;
-    Matrix g;
+    Vector x0;
+    Vector p;
+    Vector g;
     double alpha;
 
-    //ØÆ „¨Æ´Á†≠®Ó: áë-1 + è†„Ì´´
+    //–ø–æ —É–º–æ–ª—á–∞–Ω–∏—é: –ó–°-1 + –ü–∞—É—ç–ª–ª
     int oneDimIndex = 6;
     int interpIndex = 3;
     string oneDimMethods[7] = {
-            "áë-1",
-            "áë-2",
-            "î®°Æ≠†ÁÁ®-1",
-            "î®°Æ≠†ÁÁ®-2",
-            "Ñ®ÂÆ‚Æ¨®Ô",
-            "í‡•Â‚ÆÁ•Á•≠Î© ØÆ®·™",
-            "ÅÆ´ÏÊ†≠Æ"
+            "–ó–°-1",
+            "–ó–°-2",
+            "–§–∏–±–æ–Ω–∞—á—á–∏-1",
+            "–§–∏–±–æ–Ω–∞—á—á–∏-2",
+            "–î–∏—Ö–æ—Ç–æ–º–∏—è",
+            "–¢—Ä–µ—Ö—Ç–æ—á–µ—á–µ–Ω—ã–π –ø–æ–∏—Å–∫",
+            "–ë–æ–ª—å—Ü–∞–Ω–æ"
     };
     string interpMethods[5] = {
-            "è†„Ì´´",
-            "Ñ†¢®§Æ≠",
-            "Ñëä",
-            "ä„°®Á•·™†Ô ®≠‚•‡ØÆ´ÔÊ®Ô",
-            "ä¢†§‡†‚®Á≠†Ô ®≠‚•‡ØÆ´ÔÊ®Ô"
+            "–ü–∞—É—ç–ª–ª",
+            "–î–∞–≤–∏–¥–æ–Ω",
+            "–î–°–ö",
+            "–ö—É–±–∏—á–µ—Å–∫–∞—è –∏–Ω—Ç–µ—Ä–ø–æ–ª—è—Ü–∏—è",
+            "–ö–≤–∞–¥—Ä–∞—Ç–∏—á–Ω–∞—è –∏–Ω—Ç–µ—Ä–ø–æ–ª—è—Ü–∏—è"
     };
 
     double e = 0.001;
     int kMaxSwann = 40;
     int kMaxOneDim = 5;
+    int kMaxInterp = 5;
     int alphaCounter = 0;
 
     int dfOption = 1;
@@ -80,7 +82,8 @@ private:
 
 public:
     Optimize(const string& expr)    {   expression = expr;   }
-    double y(Matrix x);
+    Optimize(const string& expr, Vector x0);
+    double y(Vector x);
     void setOneDimIndex(int n)          {   oneDimIndex = n;    }
     void setInterpIndex(int n)          {   interpIndex = n;    }
     void setIndexQueue(int n, int m)    {   oneDimIndex = n; interpIndex = m;   }
@@ -89,16 +92,17 @@ public:
     string getOneDimMethodByIndex(int i)    {   return oneDimMethods[i];    };
     string getInterpMethodByIndex(int i)    {   return interpMethods[i];    };
 
-    Matrix newPoint(double);
+    Vector newPoint(double);
     double alphaSearch();
 
+    void Koshi();
     void MPK();
     void CGM();
     void setMaxSwann(int n)         {   kMaxSwann = n;  }
     void setMaxOneDim(int n)        {   kMaxOneDim = n; }
     void setDfOption(int n)         {   dfOption = n;   }
-    void setP(Matrix);
-    void setX0(Matrix);
+    void setP(Vector);
+    void setX0(Vector);
 };
 
 
